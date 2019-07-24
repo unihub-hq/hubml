@@ -1,61 +1,7 @@
 'use strict';
 
-var fs = require('fs');
 const JSON6 = require('json-z');
 const plugins = require('./components/index');
-var md = require('markdown-it')({
-	html: false,
-	linkify: true,
-	typographer: true
-});
-md.use(require('markdown-it-container'), 'warning', {
-	validate: function (params) {
-		return true;
-	},
-		render: function (tokens, idx) {
-		var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
-		if (tokens[idx].nesting === 1) {
-		      // opening tag
-			  return '<div class="alert alert-warning" role="alert">\n';
-		} else {
-		      // closing tag
-		      return '</div>\n';
-		}
-	},
-		marker: "!"
-});
-md.use(require('markdown-it-container'), 'info', {
-	validate: function (params) {
-		return true;
-	},
-		render: function (tokens, idx) {
-		var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
-		if (tokens[idx].nesting === 1) {
-		      // opening tag
-			  return '<div class="alert alert-info" role="alert">\n';
-		} else {
-		      // closing tag
-		      return '</div>\n';
-		}
-	},
-		marker: ":"
-});
-md.use(require('markdown-it-container'), 'info', {
-	validate: function (params) {
-		return true;
-	},
-		render: function (tokens, idx) {
-		var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
-		if (tokens[idx].nesting === 1) {
-		      // opening tag
-			  return '<div class="alert alert-success" role="alert">\n';
-		} else {
-		      // closing tag
-		      return '</div>\n';
-		}
-	},
-		marker: "+"
-});
 
 function mastic_parse_invocation(raw_invocation, style) {
 	var component = raw_invocation.split(/\s(.+)/)[0];  //everything before the first space
@@ -78,8 +24,6 @@ function mastic_parse_invocation(raw_invocation, style) {
 	return result;
 }
 
-var normalizeReference = md.utils.normalizeReference;
-var isSpace = md.utils.isSpace;
 function mastic_parse_textual(state, silent) {
 	var found, label, labelEnd, labelStart, pos, token, invocation, invocationStart, invocationEnd,
 		oldPos = state.pos,
@@ -264,11 +208,73 @@ function mastic_parse_block(state, silent) {
 }
 
 function HubML(options) {
+	var md = require('markdown-it')({
+		html: false,
+		linkify: true,
+		typographer: true
+	});
+	md.use(require('markdown-it-container'), 'warning', {
+		validate: function (params) {
+			return true;
+		},
+			render: function (tokens, idx) {
+			var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
+			if (tokens[idx].nesting === 1) {
+			      // opening tag
+				  return '<div class="alert alert-warning" role="alert">\n';
+			} else {
+			      // closing tag
+			      return '</div>\n';
+			}
+		},
+			marker: "!"
+	});
+	md.use(require('markdown-it-container'), 'info', {
+		validate: function (params) {
+			return true;
+		},
+			render: function (tokens, idx) {
+			var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
+			if (tokens[idx].nesting === 1) {
+			      // opening tag
+				  return '<div class="alert alert-info" role="alert">\n';
+			} else {
+			      // closing tag
+			      return '</div>\n';
+			}
+		},
+			marker: ":"
+	});
+	md.use(require('markdown-it-container'), 'info', {
+		validate: function (params) {
+			return true;
+		},
+			render: function (tokens, idx) {
+			var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
+			if (tokens[idx].nesting === 1) {
+			      // opening tag
+				  return '<div class="alert alert-success" role="alert">\n';
+			} else {
+			      // closing tag
+			      return '</div>\n';
+			}
+		},
+			marker: "+"
+	});
 	
+	const mk = require('@iktakahiro/markdown-it-katex');
+	md.use(mk);
+	const markdownItTocAndAnchor = require('markdown-it-toc-and-anchor').default;
+	md.use(markdownItTocAndAnchor, {
+		// ...options
+    })
+	
+	md.inline.ruler.after('emphasis', 'mastic_textual', mastic_parse_textual);
+	md.inline.ruler.after('mastic_textual', 'mastic_block', mastic_parse_block);
+	md.inline.ruler.after('mastic_block', 'mastic_inline', mastic_parse_inline);
+	return md;
 }
 
 module.exports = HubML;
 
-md.inline.ruler.after('emphasis', 'mastic_textual', mastic_parse_textual);
-md.inline.ruler.after('mastic_textual', 'mastic_block', mastic_parse_block);
-md.inline.ruler.after('mastic_block', 'mastic_inline', mastic_parse_inline);
+
