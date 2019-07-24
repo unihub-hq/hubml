@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-const JSON6 = require('json6');
+const JSON6 = require('json-z');
 const plugins = require('./components/index');
 var md = require('markdown-it')({
 	html: false,
