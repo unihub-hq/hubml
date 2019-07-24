@@ -1,0 +1,25 @@
+{
+  "name": "@unihub/hubml",
+  "version": "0.5.1",
+  "description": "Markdown-style markup language for interactive documents",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/unihub-dev/hubml.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unihub-dev/hubml/issues"
+  },
+  "homepage": "https://github.com/unihub-dev/hubml#readme",
+  "dependencies": {
+    "@iktakahiro/markdown-it-katex": "^3.1.0",
+    "json-z": "git+https://github.com/perfaram/masticJSON.git",
+    "markdown-it": "^9.0.1",
+    "markdown-it-toc-and-anchor": "^4.2.0"
+  }
+}
