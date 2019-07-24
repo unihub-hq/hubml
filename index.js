@@ -272,18 +272,3 @@ module.exports = HubML;
 md.inline.ruler.after('emphasis', 'mastic_textual', mastic_parse_textual);
 md.inline.ruler.after('mastic_textual', 'mastic_block', mastic_parse_block);
 md.inline.ruler.after('mastic_block', 'mastic_inline', mastic_parse_inline);
-var data = fs.readFileSync(0, 'utf-8');
-console.log(md.render(data));
-
-// instantiate parser object (w/ options ? like plugins or stuff + MD options)
-// feed it a string
-// it outputs HTML + JS
-
-var key = "clé";
-var val = "deux";
-var obj = {
-	key: val,
-}
-
-//var result = md.render('# markdown-it rulezz! {Component arg:val}');
-//console.log(result);
