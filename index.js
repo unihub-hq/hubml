@@ -1,6 +1,7 @@
 'use strict';
 
 const JSON6 = require('json-z');
+const uslug = require("uslug");
 const plugins = require('./components/index');
 let md;
 
@@ -211,6 +212,10 @@ function mastic_parse_block(state, silent) {
 	return true;
 }
 
+function tocCallback(tocHTML) {
+	console.log(tocHTML);
+}
+
 function HubML(options) {
 	md = require('markdown-it')({
 		html: false,
@@ -221,7 +226,7 @@ function HubML(options) {
 		validate: function (params) {
 			return true;
 		},
-			render: function (tokens, idx) {
+		render: function (tokens, idx) {
 			var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
 			if (tokens[idx].nesting === 1) {
 			      // opening tag
@@ -237,7 +242,7 @@ function HubML(options) {
 		validate: function (params) {
 			return true;
 		},
-			render: function (tokens, idx) {
+		render: function (tokens, idx) {
 			var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
 			if (tokens[idx].nesting === 1) {
 			      // opening tag
@@ -253,7 +258,7 @@ function HubML(options) {
 		validate: function (params) {
 			return true;
 		},
-			render: function (tokens, idx) {
+		render: function (tokens, idx) {
 			var m = tokens[idx].info.trim().match(/^spoiler\s+(.*)$/);
 			if (tokens[idx].nesting === 1) {
 			      // opening tag
@@ -269,7 +274,9 @@ function HubML(options) {
 	const mk = require('@iktakahiro/markdown-it-katex');
 	md.use(mk);
 	
-	md.use(require('markdown-it-anchor'), {})
+	md.use( require("markdown-it-anchor"), { globalIdPrefix: 'user-content-', mirrorHierarchyInIds: true, permalink: true, permalinkBefore: true, permalinkSymbol: '§', slugify: uslug } )
+	md.use( require("markdown-it-toc-done-right"), { slugify: uslug, tocCallback: tocCallback} );
+	
 	md.inline.ruler.after('emphasis', 'mastic_textual', mastic_parse_textual);
 	md.inline.ruler.after('mastic_textual', 'mastic_block', mastic_parse_block);
 	md.inline.ruler.after('mastic_block', 'mastic_inline', mastic_parse_inline);
@@ -277,5 +284,3 @@ function HubML(options) {
 }
 
 module.exports = HubML;
-
-
