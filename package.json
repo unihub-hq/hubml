@@ -20,7 +20,7 @@
     "@iktakahiro/markdown-it-katex": "^3.1.0",
     "json-z": "git+https://github.com/perfaram/masticJSON.git",
     "markdown-it": "^9.0.1",
-    "markdown-it-container": "^2.0.0",
-    "markdown-it-toc-and-anchor": "^4.2.0"
+    "markdown-it-anchor": "git+https://github.com/unihub-dev/markdown-it-anchor.git",
+    "markdown-it-container": "^2.0.0"
   }
 }

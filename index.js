@@ -2,22 +2,26 @@
 
 const JSON6 = require('json-z');
 const plugins = require('./components/index');
+let md;
 
 function mastic_parse_invocation(raw_invocation, style) {
 	var component = raw_invocation.split(/\s(.+)/)[0];  //everything before the first space
 	var invocation_string = raw_invocation.split(/\s(.+)/)[1];  //everything after the first space
+	if (!invocation_string) {
+		invocation_string = "";
+	}
 	invocation_string = "{ " + invocation_string + " }"; // wrap in curly braces for the parser
 	var invocation = JSON6.parse(invocation_string); //parse
 	  
 	let plugin = plugins[component.toLowerCase()];
 	if (plugin === undefined) {
-		throw `Undefined component : ${component}`;
+		throw new Error(`Undefined component : ${component}`);
 	}
 	
 	let callableName = "render_" + style;
 	let callable = plugin[callableName];
 	if (callable === undefined) {
-		throw `The component ${component} is unsupported in ${style} mode`;
+		throw new Error(`The component ${component} is unsupported in ${style} mode`);
 	}
 	
 	let result = callable(invocation);
@@ -107,14 +111,14 @@ function mastic_parse_inline(state, silent) {
 		return false;
 	}
 	
-	if ((state.src.charCodeAt(start) == 0x7B) && (state.src.charCodeAt(start + 1) == 0x7B)) {
+	if ((state.src.charCodeAt(start) === 0x7B) && (state.src.charCodeAt(start + 1) === 0x7B)) {
 		return false;
 	}
 	
 	if (silent) {
 		return false;
 	} // don't run any pairs in validation mode
-	  if (start + 2 >= max) {
+	if (start + 2 >= max) {
 		return false;
 	}
 	
@@ -166,7 +170,7 @@ function mastic_parse_block(state, silent) {
 	if (silent) {
 		return false;
 	} // don't run any pairs in validation mode
-	  if (start + 3 >= max) {
+	if (start + 3 >= max) {
 		return false;
 	}
 	
@@ -207,8 +211,82 @@ function mastic_parse_block(state, silent) {
 	return true;
 }
 
+function heading_with_id(state, startLine, endLine, silent) {
+	var isSpace = md.utils.isSpace;
+	
+	var ch, level, tmp, token, found, content,
+		pos = state.bMarks[startLine] + state.tShift[startLine],
+		max = state.eMarks[startLine];
+	
+	// if it's indented more than 3 spaces, it should be a code block
+	if (state.sCount[startLine] - state.blkIndent >= 4) {
+		return false;
+	}
+	
+	ch = state.src.charCodeAt(pos);
+	if (ch !== 0x23/* # */ || pos >= max) {
+		return false;
+	}
+	
+	// count heading level
+	level = 1;
+	ch = state.src.charCodeAt(++pos);
+	while (ch === 0x23/* # */ && pos < max && level <= 6) {
+		level++;
+		ch = state.src.charCodeAt(++pos);
+	}
+	
+	if (level > 6 || (pos < max && !(isSpace(ch) || ch === 0x28/* ( */))) {
+		return false;
+	}
+	let start = pos;
+	
+	if (silent) {
+		return true;
+	}
+	
+	state.pos = start + 1;
+	while (state.pos < max) {
+		ch = state.src.charCodeAt(state.pos);
+		if (ch === 0x29/* ) */) {
+			found = true;
+			break;
+		}
+		
+		state.pos = state.skipChars(state.pos, ch);
+	}
+	
+	if (!found || start + 1 === state.pos) {
+		state.pos = start;
+		return false;
+	}
+	
+	content = state.src.slice(start + 1, state.pos);
+	pos = state.pos + 1;
+	// Let's cut tails like '    ###  ' from the end of string
+	
+	max = state.skipSpacesBack(max, pos);
+	tmp = state.skipCharsBack(max, 0x23, pos); // #
+	if (tmp > pos && isSpace(state.src.charCodeAt(tmp - 1))) {
+		max = tmp;
+	}
+	
+	state.line = startLine + 1;
+	token = state.push('heading_open', 'h' + String(level), 1);
+	token.markup = '########'.slice(0, level);
+	token.map = [ startLine, state.line ];
+	token.attrs = [ [ 'id', content ] ];
+	token = state.push('inline', '', 0);
+	token.content = state.src.slice(pos, max).trim();
+	token.map = [ startLine, state.line ];
+	token.children = [];
+	token = state.push('heading_close', 'h' + String(level),  -1);
+	token.markup = '########'.slice(0, level);
+	return true;
+}
+
 function HubML(options) {
-	var md = require('markdown-it')({
+	md = require('markdown-it')({
 		html: false,
 		linkify: true,
 		typographer: true
@@ -264,11 +342,10 @@ function HubML(options) {
 	
 	const mk = require('@iktakahiro/markdown-it-katex');
 	md.use(mk);
-	const markdownItTocAndAnchor = require('markdown-it-toc-and-anchor').default;
-	md.use(markdownItTocAndAnchor, {
-		// ...options
-    })
 	
+	md.block.ruler.before('heading', 'heading_with_id', heading_with_id);
+	
+	md.use(require('markdown-it-anchor'), {})
 	md.inline.ruler.after('emphasis', 'mastic_textual', mastic_parse_textual);
 	md.inline.ruler.after('mastic_textual', 'mastic_block', mastic_parse_block);
 	md.inline.ruler.after('mastic_block', 'mastic_inline', mastic_parse_inline);
