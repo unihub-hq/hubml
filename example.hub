@@ -10,10 +10,13 @@ ___ separator alternatif
 
 [texte du lien](url_du_lien)
 
-$inline \LaTeX$
+$\LaTeX$
 
 $$
-block LaTex
+% \f is defined as f(#1) using the macro
+\f{x} = \int_{-\infty}^\infty
+    \hat \f\xi\,e^{2 \pi i \xi x}
+    \,d\xi
 $$
 
 

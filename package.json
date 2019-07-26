@@ -4,24 +4,36 @@
   "description": "Markdown-style markup language for interactive documents",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test",
+    "lint": "standard index.js",
+    "lint-fix": "standard --fix index.js",
+    "prepublish": "npm run lint && node test"
   },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/unihub-dev/hubml.git"
   },
-  "author": "",
+  "files": [
+    "README.md",
+    "components/*",
+    "index.js"
+  ],
+  "author": "Perceval Faramaz <perfaram>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/unihub-dev/hubml/issues"
   },
   "homepage": "https://github.com/unihub-dev/hubml#readme",
+  "devDependencies": {
+    "standard": "*"
+  },
   "dependencies": {
-    "@iktakahiro/markdown-it-katex": "^3.1.0",
     "json-z": "git+https://github.com/perfaram/masticJSON.git",
+    "katex": "^0.10.2",
     "markdown-it": "^9.0.1",
-    "markdown-it-anchor-toc": "git+https://github.com/unihub-dev/markdown-it-anchor-toc.git",
+    "markdown-it-anchor-toc": "git+https://github.com/unihub-dev/markdown-it-anchor-toc.git#52b5812",
     "markdown-it-container": "^2.0.0",
+    "markdown-it-texmath": "^0.5.5",
     "uslug": "^1.0.4"
   }
 }
