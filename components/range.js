@@ -3,7 +3,6 @@ function render_textual(raw_args) { //tangle-style
 	let rangeMin = args.range.min;
 	let rangeMax = args.range.max;
 	let output = `<input type="range" min="${rangeMin}" max="${rangeMax}" step="1" value="5" class="block">`;
-	console.log(output);
 	return output;
 }
 
@@ -12,7 +11,6 @@ function render_block(raw_args) { //slider
 	let rangeMin = args.range.min;
 	let rangeMax = args.range.max;
 	let output = `<input type="range" min="${rangeMin}" max="${rangeMax}" step="1" value="5" class="block">`;
-	console.log(output);
 	return output;
 }
 

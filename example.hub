@@ -1,0 +1,85 @@
+# first title
+##(my-custom-id !notoc) h2
+##(!notoc) second title
+### third title
+### thirdird title !notoc
+###(kamouloxxed) KAMOULOX title
+
+--- separator
+___ separator alternatif
+
+[texte du lien](url_du_lien)
+
+$inline \LaTeX$
+
+$$
+block LaTex
+$$
+
+
+:::
+info block
+:::
+!!!
+warning block
+!!!
++++
+highlighted ("success") block
++++
+
+```
+code block
+```
+
+~~strikethru~~
+*italic*
+**bold**
+
+Texte blabla [^1]
+
+[^1]: plus de détails (NDBDP)
+
+```
+{{Range var:$age, range:0..100}} => block
+% $graphRevenuY = ($revenu - $x*$pX)/$pY
+% Graph 
+{{Graph 
+expression:`($revenu - $x*$pX)/$pY`, 
+axisX: {
+	label: 'qté de X',
+	var: @x
+},
+axisY: {
+	label: 'qté de Y',
+	var @y
+}
+}}
+```
+
+Si j'ai [_$((age > 1) ? "ans" : "an")_]{Range var: &age, interactive:`(age > 10)`, range: -1..5, default: 3}, alors j'ai vécu au moins $(age * 365) jours.
+
+::: spoiler click me
+*content*
+:::
+
+
+condition ? val1 : val2
+binding is two-way (read/write) unless var:age? (read-only ; makes the control non-interactive) or var:age! (where the control is the only one allowed to change the variable – another control trying to reclaim the variable for itself while raise an error)
+control interactivity : `interactive:true/false/bool-convertible`
+
+
+----old stuff
+
+val1 if condition else val2
+val1 or val2 [or val3...]
+0..10 [by 2]
+(always "default to X")
+
+
+smartpants ! incl. ligatures, => etc
+```
+Components : 
+* Textual [label, evt interactive]{ComponentName arg1:val1, arg2:val2}
+* Standalone-inline {ComponentName arg:val}
+* Standalone-block {{ComponentName arg:val}}
+```
