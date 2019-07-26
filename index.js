@@ -274,8 +274,7 @@ function HubML(options) {
 	const mk = require('@iktakahiro/markdown-it-katex');
 	md.use(mk);
 	
-	md.use( require("markdown-it-anchor"), { globalIdPrefix: 'user-content-', mirrorHierarchyInIds: true, permalink: true, permalinkBefore: true, permalinkSymbol: '§', slugify: uslug } )
-	md.use( require("markdown-it-toc-done-right"), { slugify: uslug, tocCallback: tocCallback} );
+	md.use( require("markdown-it-anchor-toc"), { globalIdPrefix: 'user-content-', mirrorHierarchyInIds: true, permalink: true, permalinkBefore: true, permalinkSymbol: '§', slugify: uslug, tocCallback: tocCallback } )
 	
 	md.inline.ruler.after('emphasis', 'mastic_textual', mastic_parse_textual);
 	md.inline.ruler.after('mastic_textual', 'mastic_block', mastic_parse_block);
